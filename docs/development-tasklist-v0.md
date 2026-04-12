@@ -2,68 +2,93 @@
 
 > 目标：先实现可审计、可演化的 LLM-Wiki 内核，再扩展到多入口与智能体生态。
 
-## M1：基础内核（先打通）
-
-- [ ] 定义 Schema
-  - [ ] `source_input`
-  - [ ] `CapturedSource`
-  - [ ] `NormalizedSource`
-  - [ ] `EnrichedSource`
-  - [ ] `GovernedSource`
-  - [ ] `source_authority / evidence_grade / policy` 枚举
-- [ ] 落地目录骨架
-  - [ ] `_raw/`
-  - [ ] `raw/`
-  - [ ] `raw/_restricted/`
-  - [ ] `raw/_archive/`
-  - [ ] `wiki/`
-  - [ ] `cards/`
-- [ ] 实现 `capture_adapter`（URL / file / pasted text）
-- [ ] 实现 `.manifest.json` 最小账本（`source_id + hash + status`）
-- [ ] 落地 `index.md / log.md / overview.md` 自动更新
-
-### M1 验收标准
-- [ ] 一条 URL 可完成 capture
-- [ ] raw + manifest + index/log 正确更新
-- [ ] `source_id` 可追踪
-
 ---
 
-## M2：编译与治理
+## A. Critical Path（必须先做）
 
-- [ ] 实现 `normalize_engine`（文本/OCR/转录分支）
-- [ ] 实现 `enrich_engine`（entities/concepts/claims/contradictions）
-- [ ] 实现 `govern_engine`（authority/grade/risk/policy）
-- [ ] 实现 `publish_engine`（draft/publish/restricted 路径）
-- [ ] 实现 `query` 最小版（带 citations）
-- [ ] 实现 `lint` 双层（deterministic + semantic）
+1. Schema 基线
+- [ ] `source_input`
+- [ ] `CapturedSource`
+- [ ] `NormalizedSource`
+- [ ] `EnrichedSource`
+- [ ] `GovernedSource`
+- [ ] `source_authority / evidence_grade / policy` 枚举
 
-### M2 验收标准
-- [ ] source 从 raw 编译到 wiki/card
-- [ ] query 可返回 citations
+2. 数据骨架与账本
+- [ ] 目录骨架：`_raw/`, `raw/`, `raw/_restricted/`, `raw/_archive/`, `wiki/`, `cards/`
+- [ ] `.manifest.json` 最小账本（`source_id + hash + status`）
+- [ ] `index.md / log.md / overview.md` 自动更新
+
+3. Compiler 主链路
+- [ ] `capture_adapter`（URL / file / pasted text）
+- [ ] `normalize_engine`（先文本）
+- [ ] `enrich_engine`（entities/concepts/claims）
+- [ ] `govern_engine`（authority/grade/risk/policy）
+- [ ] `publish_engine`（draft/publish/restricted）
+
+4. 最小可用查询
+- [ ] `query`（必须带 citations）
 - [ ] citation 可追溯到 `source_id`
 
----
-
-## M3：长期演化能力
-
-- [ ] 实现周期 review（weekly/monthly）
-- [ ] 实现 retract pipeline（blast radius + cleanup + optional recompile）
-- [ ] 实现 restrict/archive/delete 策略联动
-- [ ] 实现 traceability chain 全链追踪
-- [ ] 接入 OpenClaw/Hermes 最小 skill contract
-
-### M3 验收标准
-- [ ] 高风险低等级来源可 review → retract → restrict/archive/delete
-- [ ] 全链审计可回放
+### Critical Path 验收
+- [ ] 一条 URL 能完整走通 capture → publish
+- [ ] query 返回结果可追溯到 raw source
+- [ ] 未分级内容不能进正式层
 
 ---
 
-## 本周执行建议（可并行）
+## B. Parallel Lanes（可并行）
+
+### Lane B1：质量维护
+- [ ] deterministic lint（索引/链接/frontmatter/manifest）
+- [ ] semantic lint（冲突/过期/薄弱证据）
+- [ ] cross-linker（独立维护模块）
+
+### Lane B2：治理闭环
+- [ ] review 周期（weekly/monthly）
+- [ ] retract pipeline（blast radius + cleanup + optional recompile）
+- [ ] `restrict/archive/delete` 联动
+
+### Lane B3：追踪与审计
+- [ ] traceability chain（source → wiki/card → answer）
+- [ ] retraction audit 记录
+- [ ] policy/version 变更记录
+
+### Lane B4：入口接入（后置并行）
+- [ ] OpenClaw/Hermes 最小 skill contract
+- [ ] Web/Feishu/WeChat 入口接线（消费已治理知识）
+
+---
+
+## C. Backlog（可延后）
+
+- [ ] query depth levels（quick/standard/deep）
+- [ ] session resume（research/thesis）
+- [ ] status/delta/insights 仪表盘
+- [ ] thesis-driven 默认编排
+- [ ] 全量多模态高级策略（video 分帧、多路 OCR 策略）
+- [ ] 复杂输出形态（slides/playbook/report）
+
+---
+
+## M1 / M2 / M3 映射
+
+### M1（基础内核）
+- 覆盖 A 全部 + B1 的 deterministic lint
+
+### M2（编译与治理）
+- 覆盖 B1/B2 主体 + 最小接入能力
+
+### M3（长期演化）
+- 覆盖 B3 + B4 完整 + C 中高价值项
+
+---
+
+## 本周执行建议（按关键路径）
 
 - Day 1: Schema + 目录 + Manifest
 - Day 2: Capture Adapter
-- Day 3: Normalize（先文本）
+- Day 3: Normalize（文本）
 - Day 4: Enrich + Govern（最小规则）
-- Day 5: Publish + Index/Log + 最小 Query
+- Day 5: Publish + Query + 可追溯验收
 
