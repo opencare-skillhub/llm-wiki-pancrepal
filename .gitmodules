@@ -10,3 +10,6 @@
 [submodule "reference_repo/project3-obsidian-wiki"]
 	path = reference_repo/project3-obsidian-wiki
 	url = https://github.com/Ar9av/obsidian-wiki.git
+[submodule "reference_repo/graphify"]
+	path = reference_repo/graphify
+	url = https://github.com/safishamsi/graphify.git
