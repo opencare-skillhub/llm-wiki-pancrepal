@@ -190,7 +190,7 @@ pancrepal-wiki/
 
 ## 2.4 参考项目评估与合并结论
 
-基于对 4 个参考项目（`nvk/llm-wiki`、`SamurAIGPT/llm-wiki-agent`、`astro-han/karpathy-llm-wiki`、`Ar9av/obsidian-wiki`）的 README、AGENTS/SKILL、commands、关键脚本的细读，结论不是“把所有优点都加进来”，而是要分为：**立即吸收、第二阶段吸收、暂不引入**。
+基于对 4 个 LLM-Wiki 参考项目（`nvk/llm-wiki`、`SamurAIGPT/llm-wiki-agent`、`astro-han/karpathy-llm-wiki`、`Ar9av/obsidian-wiki`）+ `graphify`（结构化抽取范式）的综合细读，结论不是“把所有优点都加进来”，而是要分为：**立即吸收、第二阶段吸收、暂不引入**。
 
 ### 2.4.1 立即吸收（纳入 v1.1 设计基线）
 
@@ -270,7 +270,7 @@ pancrepal-wiki/
 
 ### 2.4.4 合并后的设计建议（最终决策）
 
-综合四个项目后，PancrePal-Wiki 的主张是：
+综合“4 个 wiki 参考项目 + graphify 抽取范式”后，PancrePal-Wiki 的主张是：
 
 - **方法论**：以 Karpathy `LLM Wiki` 为上位约束
 - **最小闭环**：吸收 `SamurAIGPT/llm-wiki-agent` 的 overview / syntheses / 双层 lint 思路
@@ -394,6 +394,42 @@ PancrePal-Wiki 的对外最小协议定义为：
 - `lint(mode)`
 
 这是用户侧与 agent 侧都应共享的最小交互面。其余复杂能力（research、thesis、status、insights）都属于增强层。
+
+### 2.5.5 Graphify 启发：医疗 AST（Medical AST）作为派生层
+
+参考 `safishamsi/graphify`（v4）后，新增一个明确结论：  
+**AST 的核心不是“代码专用”，而是“复杂信息的层级结构化方法”。**
+
+在本项目中，应把该思想迁移为“医疗 AST”抽取规范：
+
+- 根节点：`patient_case`
+- 一级节点：`diagnosis / treatment / adverse_event / follow_up / outcome`
+- 二级节点：`treatment.chemotherapy.regimen`、`diagnosis.stage`、`diagnosis.biomarker` 等
+- 关系边：`has_diagnosis`、`received_treatment`、`developed_adverse_event`、`supported_by_source`
+
+#### 2.5.5a 设计边界（必须遵守）
+
+1. **Graph 是派生层，不是事实主层**  
+   仍以 `raw -> compiler -> wiki` 为真相主链；`graph/` 仅用于检索增强、可视化和结构分析。
+
+2. **节点与边必须可追溯到证据**  
+   每个 node/edge 至少关联：`source_id`、`evidence_span`、`provenance`。
+
+3. **推断状态显式标记**  
+   沿用 `extracted / inferred / ambiguous`，并叠加 `source_authority` 与 `evidence_grade`。
+
+#### 2.5.5b 对应目录建议
+
+在 `graph/` 下新增：
+- `graph/medical_ast/nodes/`
+- `graph/medical_ast/edges/`
+- `graph/medical_ast/snapshots/`
+
+并在自优化环节新增图谱回归项：
+- orphan nodes
+- dangling edges
+- 高风险低证据节点告警
+- wiki 与 graph 的双向一致性检查
 
 ## 2.6 入库前分级与标识（高优先级治理要求）
 
@@ -915,4 +951,3 @@ self-improvement/
 - 所有医学结论必须可追溯到证据
 - 变更必须写入 evolution-log
 - 新 skill 必须符合 contract schema
-

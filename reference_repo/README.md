@@ -38,6 +38,15 @@
   - cross-linking / taxonomy / lint / graph export
   - `_raw/` staging / optional semantic search
 
+### 5. `graphify`（计划纳入）
+- 来源：<https://github.com/safishamsi/graphify>
+- 重点借鉴：
+  - AST 化分层抽取思想
+  - 节点-关系图谱构建范式
+  - 结构化提取到图模型的工程路径
+- 迁移方向：
+  - 用于 `graph/medical_ast` 派生层（患者诊疗要素树/图）
+
 ## 使用原则
 - 以 Karpathy `LLM Wiki` 为上位方法论。
 - 以 `docs/architecture-v1.1.md` 为唯一主设计文档。

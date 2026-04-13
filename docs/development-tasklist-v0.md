@@ -54,6 +54,12 @@
 - [ ] retraction audit 记录
 - [ ] policy/version 变更记录
 
+### Lane B5：医学 AST / 图谱派生层（Graphify 思路吸收）
+- [ ] `graph/medical_ast` 目录与 schema（node/edge）
+- [ ] 抽取状态字段：`extracted/inferred/ambiguous`
+- [ ] node/edge 强制 `source_id + evidence_span`
+- [ ] wiki ↔ graph 一致性检查（回归任务）
+
 ### Lane B4：入口接入（后置并行）
 - [ ] OpenClaw/Hermes 最小 skill contract
 - [ ] Web/Feishu/WeChat 入口接线（消费已治理知识）
@@ -91,4 +97,3 @@
 - Day 3: Normalize（文本）
 - Day 4: Enrich + Govern（最小规则）
 - Day 5: Publish + Query + 可追溯验收
-

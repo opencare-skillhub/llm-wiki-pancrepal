@@ -1,4 +1,4 @@
-# 参考项目深度分析（4个 LLM Wiki 相关仓库）
+# 参考项目深度分析（5个 LLM Wiki / Graph 相关仓库）
 
 > 本文是工程参考分析，不替代主设计文档。唯一主设计文档仍是 `docs/architecture-v1.1.md`。
 
@@ -216,9 +216,44 @@
 
 ---
 
-## 5. 四个项目合并后的设计建议
+## 5. safishamsi/graphify（v4）
 
-### 5.1 最应吸收的“共同稳定能力”
+### 5.1 可吸收价值（对 PancrePal-Wiki）
+
+graphify 的核心价值不在“代码图谱”本身，而在它的 **结构化抽取范式**：  
+把非结构化输入转换为分层节点 + 关系边 + 可回溯上下文。
+
+这个思路可直接迁移成“医学 AST（Medical AST）”：
+- 根节点：`patient_case`
+- 一级节点：`diagnosis / treatment / adverse_event / follow_up / outcome`
+- 二级节点：如 `treatment.chemotherapy.regimen`、`diagnosis.staging`
+- 关系边：`has_diagnosis`、`received_treatment`、`developed_adverse_event`、`supported_by_source`
+
+### 5.2 迁移时的边界（必须保留）
+
+1. **Graph 是派生层，不是事实主层**  
+   仍然遵守 `raw -> compiler -> wiki` 主链路；graph 只做检索增强与关系可视化。
+
+2. **每个节点必须带证据锚点**  
+   节点/边都要能回指 `source_id + span/offset + quote`，避免“无证据推断图”。
+
+3. **抽取状态要显式区分**  
+   沿用 `extracted / inferred / ambiguous`，并叠加 `source_authority / evidence_grade`。
+
+### 5.3 对主设计的新增建议
+
+- 新增 `graph/medical_ast/` 派生目录
+- 新增 `Graph Node/Edge Schema`（与 wiki frontmatter 互链）
+- 自优化中新增“图谱一致性回归”：
+  - orphan nodes
+  - dangling edges
+  - 低证据高中心性节点告警
+
+---
+
+## 6. 五个项目合并后的设计建议
+
+### 6.1 最应吸收的“共同稳定能力”
 1. Raw immutable
 2. index/log 优先导航
 3. ingest/query/lint 主闭环
@@ -232,16 +267,16 @@
 11. structural guardian / canonical placement
 12. dedicated cross-linker
 13. weekly/monthly self-improvement with regression sets
+14. graph-derived medical AST（派生层，非主事实层）
 
-### 5.2 不应直接照搬的部分
+### 6.2 不应直接照搬的部分
 1. 不要一开始把 PancrePal 做成大而全的通用 hub
 2. 不要过早引入过多输出形态（slides/report/playbook 全上）
 3. 不要把患者入口直接等同于 research pipeline
 4. 不要让 query 默认污染正式 wiki
 
-### 5.3 适合 PancrePal 的吸收顺序
+### 6.3 适合 PancrePal 的吸收顺序
 - 第一优先：raw/wiki/schema/log/index/manifest/provenance
 - 第二优先：thesis mode / query depth / deterministic+semantic lint
 - 第三优先：cross-linker / status / insights / project output
 - 第四优先：multi-agent research orchestration
-
